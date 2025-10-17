@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { supabase } from '@/utils/supabase'
+import { AV } from '@/utils/leancloud'  // 改这里
 import CakeCard from './CakeCard.vue'
 
 export default {
@@ -23,7 +23,7 @@ export default {
   },
   props: {
     categoryId: {
-      type: Number,
+      type: String,  // 改为 String
       default: null
     }
   },
@@ -45,17 +45,26 @@ export default {
     async loadCakes() {
       this.loading = true
 
-      let query = supabase
-          .from('cake')
-          .select('*')
-          .eq('status', 1)
+      // 修改为 LeanCloud 查询
+      const query = new AV.Query('Cake')
+      query.equalTo('status', 1)  // 只查询上架的商品
 
+      // 如果有分类筛选
       if (this.categoryId) {
-        query = query.eq('category_id', this.categoryId)
+        query.equalTo('categoryId', this.categoryId)
       }
 
-      const { data } = await query
-      this.cakes = data || []
+      const results = await query.find()
+
+      // 转换数据格式
+      this.cakes = results.map(item => ({
+        id: item.id,
+        name: item.get('name'),
+        cover: item.get('cover'),
+        price: item.get('price'),
+        description: item.get('description')
+      }))
+
       this.loading = false
     }
   }
@@ -63,6 +72,7 @@ export default {
 </script>
 
 <style scoped>
+/* 样式不变 */
 .cake-list {
   min-height: 300px;
 }

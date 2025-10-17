@@ -7,7 +7,7 @@
     <div v-else-if="cake" class="detail">
       <img :src="cake.cover" :alt="cake.name" class="detail-img" />
       <h2>{{ cake.name }}</h2>
-      <p class="category">分类：{{ cake.category?.name || '未分类' }}</p>
+      <p class="category">分类：{{ cake.categoryName || '未分类' }}</p>
       <p class="price">¥{{ cake.price }}</p>
       <p class="desc">{{ cake.description || '暂无描述' }}</p>
     </div>
@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { supabase } from '@/utils/supabase'
+import { AV } from '@/utils/leancloud'  // 改这里
 
 export default {
   name: 'DetailView',
@@ -32,15 +32,34 @@ export default {
   },
   methods: {
     async loadDetail() {
-      const { data, error } = await supabase
-          .from('cake')
-          .select('*, category(name)')
-          .eq('id', this.$route.params.id)
-          .single()
+      try {
+        // 查询蛋糕信息
+        const query = new AV.Query('Cake')
+        const cakeObj = await query.get(this.$route.params.id)
 
-      if (!error && data) {
-        this.cake = data
+        // 获取分类信息
+        const categoryId = cakeObj.get('categoryId')
+        let categoryName = '未分类'
+
+        if (categoryId) {
+          const categoryQuery = new AV.Query('Category')
+          const category = await categoryQuery.get(categoryId)
+          categoryName = category.get('name')
+        }
+
+        // 组装数据
+        this.cake = {
+          id: cakeObj.id,
+          name: cakeObj.get('name'),
+          cover: cakeObj.get('cover'),
+          price: cakeObj.get('price'),
+          description: cakeObj.get('description'),
+          categoryName: categoryName
+        }
+      } catch (error) {
+        console.error('加载失败', error)
       }
+
       this.loading = false
     }
   }
@@ -48,6 +67,7 @@ export default {
 </script>
 
 <style scoped>
+/* 样式不变 */
 .container {
   max-width: 800px;
   margin: 20px auto;

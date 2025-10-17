@@ -1,0 +1,50 @@
+[
+  {
+    "categoryId": "6755a1b3c41b2c008c000001",
+    "name": "草莓奶油蛋糕",
+    "cover": "https://via.placeholder.com/300",
+    "price": 128,
+    "description": "新鲜草莓搭配奶油",
+    "status": 1
+  },
+  {
+    "categoryId": "6755a1b3c41b2c008c000001",
+    "name": "巧克力蛋糕",
+    "cover": "https://via.placeholder.com/300",
+    "price": 158,
+    "description": "浓郁巧克力风味",
+    "status": 1
+  },
+  {
+    "categoryId": "6755a1b3c41b2c008c000002",
+    "name": "芒果慕斯",
+    "cover": "https://via.placeholder.com/300",
+    "price": 98,
+    "description": "清爽芒果慕斯",
+    "status": 1
+  },
+  {
+    "categoryId": "6755a1b3c41b2c008c000002",
+    "name": "榴莲慕斯",
+    "cover": "https://via.placeholder.com/300",
+    "price": 128,
+    "description": "浓郁榴莲风味",
+    "status": 1
+  },
+  {
+    "categoryId": "6755a1b3c41b2c008c000003",
+    "name": "纽约芝士蛋糕",
+    "cover": "https://via.placeholder.com/300",
+    "price": 118,
+    "description": "正宗纽约风味",
+    "status": 1
+  },
+  {
+    "categoryId": "6755a1b3c41b2c008c000003",
+    "name": "日式芝士蛋糕",
+    "cover": "https://via.placeholder.com/300",
+    "price": 108,
+    "description": "软绵绵的日式风味",
+    "status": 1
+  }
+]

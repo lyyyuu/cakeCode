@@ -20,13 +20,13 @@
 </template>
 
 <script>
-import { supabase } from '@/utils/supabase'
+import { AV } from '@/utils/leancloud'  // 改这里
 
 export default {
   name: 'CategoryTabs',
   props: {
     modelValue: {
-      type: Number,
+      type: String,  // 改为 String（LeanCloud 的 ID 是字符串）
       default: null
     }
   },
@@ -41,18 +41,25 @@ export default {
   },
   methods: {
     async loadCategories() {
-      const { data } = await supabase
-          .from('category')
-          .select('*')
-          .order('sort', { ascending: true })
+      // 修改为 LeanCloud 查询
+      const query = new AV.Query('Category')
+      query.ascending('sort')  // 按 sort 升序排列
 
-      this.categories = data || []
+      const results = await query.find()
+
+      // 转换数据格式
+      this.categories = results.map(item => ({
+        id: item.id,  // LeanCloud 的 ID
+        name: item.get('name'),
+        sort: item.get('sort')
+      }))
     }
   }
 }
 </script>
 
 <style scoped>
+/* 样式不变 */
 .tabs {
   display: flex;
   gap: 10px;

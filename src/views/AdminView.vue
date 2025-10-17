@@ -8,7 +8,7 @@
       <form @submit.prevent="handleSubmit">
         <div class="form-group">
           <label>分类</label>
-          <select v-model="form.category_id" required>
+          <select v-model="form.categoryId" required>
             <option
                 v-for="cat in categories"
                 :key="cat.id"
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { supabase } from '@/utils/supabase'
+import { AV } from '@/utils/leancloud'  // 改这里
 
 export default {
   name: 'AdminView',
@@ -62,7 +62,7 @@ export default {
       submitting: false,
       message: null,
       form: {
-        category_id: '',
+        categoryId: '',
         name: '',
         cover: '',
         price: 0,
@@ -75,32 +75,41 @@ export default {
   },
   methods: {
     async loadCategories() {
-      const { data } = await supabase
-          .from('category')
-          .select('*')
-          .order('sort')
+      const query = new AV.Query('Category')
+      query.ascending('sort')
 
-      this.categories = data || []
-      if (data && data.length > 0) {
-        this.form.category_id = data[0].id
+      const results = await query.find()
+
+      this.categories = results.map(item => ({
+        id: item.id,
+        name: item.get('name')
+      }))
+
+      if (this.categories.length > 0) {
+        this.form.categoryId = this.categories[0].id
       }
     },
+
     async handleSubmit() {
       this.submitting = true
       this.message = null
 
-      const { error } = await supabase
-          .from('cake')
-          .insert([this.form])
+      try {
+        // 创建 Cake 对象
+        const Cake = AV.Object.extend('Cake')
+        const cake = new Cake()
 
-      this.submitting = false
+        // 设置属性
+        cake.set('categoryId', this.form.categoryId)
+        cake.set('name', this.form.name)
+        cake.set('cover', this.form.cover)
+        cake.set('price', this.form.price)
+        cake.set('description', this.form.description)
+        cake.set('status', 1)  // 默认上架
 
-      if (error) {
-        this.message = {
-          type: 'error',
-          text: '添加失败：' + error.message
-        }
-      } else {
+        // 保存到云端
+        await cake.save()
+
         this.message = {
           type: 'success',
           text: '添加成功！'
@@ -112,17 +121,25 @@ export default {
         this.form.price = 0
         this.form.description = ''
 
-        // 3秒后清除消息
         setTimeout(() => {
           this.message = null
         }, 3000)
+
+      } catch (error) {
+        this.message = {
+          type: 'error',
+          text: '添加失败：' + error.message
+        }
       }
+
+      this.submitting = false
     }
   }
 }
 </script>
 
 <style scoped>
+/* 样式保持不变 */
 .container {
   max-width: 800px;
   margin: 20px auto;
