@@ -1,12 +1,5 @@
 <template>
-  <div class="tabs">
-    <button
-        class="tab"
-        :class="{ active: modelValue === null }"
-        @click="$emit('update:modelValue', null)"
-    >
-      全部
-    </button>
+  <div :class="['tabs', { vertical: vertical }]">
     <button
         v-for="category in categories"
         :key="category.id"
@@ -20,14 +13,18 @@
 </template>
 
 <script>
-import { AV } from '@/utils/leancloud'  // 改这里
+import { AV } from '@/utils/leancloud'
 
 export default {
   name: 'CategoryTabs',
   props: {
     modelValue: {
-      type: String,  // 改为 String（LeanCloud 的 ID 是字符串）
+      type: String,
       default: null
+    },
+    vertical: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['update:modelValue'],
@@ -41,42 +38,55 @@ export default {
   },
   methods: {
     async loadCategories() {
-      // 修改为 LeanCloud 查询
       const query = new AV.Query('Category')
-      query.ascending('sort')  // 按 sort 升序排列
+      query.ascending('sort')
 
       const results = await query.find()
 
-      // 转换数据格式
       this.categories = results.map(item => ({
-        id: item.id,  // LeanCloud 的 ID
+        id: item.id,
         name: item.get('name'),
         sort: item.get('sort')
       }))
+
+      // 默认选中第一个分类
+      if (this.categories.length > 0 && !this.modelValue) {
+        this.$emit('update:modelValue', this.categories[0].id)
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-/* 样式不变 */
 .tabs {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
   overflow-x: auto;
   padding-bottom: 10px;
 }
 
+.tabs.vertical {
+  flex-direction: column;
+  overflow-x: visible;
+  padding-bottom: 0;
+  gap: 8px;
+}
+
 .tab {
-  padding: 8px 16px;
+  padding: 10px 16px;
   border: 1px solid #ddd;
   background: white;
-  border-radius: 20px;
+  border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.3s;
   font-size: 14px;
+}
+
+.tabs.vertical .tab {
+  width: 100%;
+  text-align: left;
 }
 
 .tab:hover {
@@ -87,5 +97,6 @@ export default {
   background: #ff6b6b;
   color: white;
   border-color: #ff6b6b;
+  font-weight: bold;
 }
 </style>

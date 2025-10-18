@@ -1,8 +1,13 @@
 <template>
-  <div class="cake-card" @click="goToDetail">
-    <img :src="cake.cover" :alt="cake.name" />
-    <h3>{{ cake.name }}</h3>
-    <p class="price">¥{{ cake.price }}</p>
+  <div class="cake-card">
+    <router-link :to="`/detail/${cake.id}`" class="card-link">
+      <img :src="cake.cover" :alt="cake.name" class="cake-img" />
+      <div class="cake-info">
+        <h3>{{ cake.name }}</h3>
+        <p class="description">{{ cake.description }}</p>
+        <p class="price">¥{{ minPrice }} 起</p>
+      </div>
+    </router-link>
   </div>
 </template>
 
@@ -15,9 +20,12 @@ export default {
       required: true
     }
   },
-  methods: {
-    goToDetail() {
-      this.$router.push(`/detail/${this.cake.id}`)
+  computed: {
+    minPrice() {
+      if (!this.cake.sizes || this.cake.sizes.length === 0) {
+        return 0
+      }
+      return Math.min(...this.cake.sizes.map(s => s.price))
     }
   }
 }
@@ -25,37 +33,64 @@ export default {
 
 <style scoped>
 .cake-card {
-  border: 1px solid #eee;
-  border-radius: 8px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.3s, box-shadow 0.3s;
+  width: 100%;
   background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
 }
 
 .cake-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
 }
 
-.cake-card img {
-  width: 100%;
-  height: 200px;
+.card-link {
+  display: flex;
+  gap: 15px;
+  text-decoration: none;
+  color: inherit;
+  padding: 15px;
+}
+
+.cake-img {
+  width: 120px;
+  height: 120px;
   object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
 }
 
-.cake-card h3 {
-  padding: 10px;
-  font-size: 16px;
-  color: #333;
-  margin: 0;
+.cake-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.cake-card .price {
-  padding: 0 10px 10px;
-  color: #ff6b6b;
+.cake-info h3 {
   font-size: 18px;
-  font-weight: bold;
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.description {
+  font-size: 13px;
+  color: #999;
   margin: 0;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.price {
+  font-size: 18px;
+  color: #ff6b6b;
+  font-weight: bold;
+  margin: 8px 0 0 0;
 }
 </style>

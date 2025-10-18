@@ -1,14 +1,20 @@
 <template>
-  <div class="container">
-    <h1>🎂 蛋糕商城</h1>
+  <div class="home-container">
+    <!-- 左侧分类 -->
+    <aside class="sidebar">
+      <h2 class="sidebar-title">蛋糕分类</h2>
+      <CategoryTabs v-model="currentCategory" :vertical="true" />
+    </aside>
 
-    <CategoryTabs v-model="currentCategory" />
+    <!-- 右侧内容 -->
+    <main class="main-content">
+      <h1 class="page-title">蛋糕商城</h1>
+      <CakeList :category-id="currentCategory" />
 
-    <CakeList :category-id="currentCategory" />
-
-    <div class="admin-link">
-      <router-link to="/admin">管理后台</router-link>
-    </div>
+      <div class="admin-link">
+        <router-link to="/admin">管理后台</router-link>
+      </div>
+    </main>
   </div>
 </template>
 
@@ -31,26 +37,47 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
-  margin-bottom: 20px;
+.home-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f5f5;
 }
 
-h1 {
+.sidebar {
+  width: 200px;
+  background: white;
+  padding: 20px;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar-title {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-title {
   text-align: center;
   margin-bottom: 30px;
   color: #333;
+  font-size: 28px;
 }
 
 .admin-link {
   text-align: center;
-  margin-top: 30px;
+  margin-top: 40px;
   padding-top: 20px;
   border-top: 1px solid #eee;
 }
@@ -59,9 +86,27 @@ h1 {
   color: #666;
   text-decoration: none;
   font-size: 14px;
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  transition: all 0.3s;
 }
 
 .admin-link a:hover {
-  color: #ff6b6b;
+  background: #ff6b6b;
+  color: white;
+  border-color: #ff6b6b;
+}
+
+@media (max-width: 768px) {
+  .home-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
 }
 </style>

@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { AV } from '@/utils/leancloud'  // 改这里
+import { AV } from '@/utils/leancloud'
 import CakeCard from './CakeCard.vue'
 
 export default {
@@ -23,7 +23,7 @@ export default {
   },
   props: {
     categoryId: {
-      type: String,  // 改为 String
+      type: String,
       default: null
     }
   },
@@ -45,18 +45,15 @@ export default {
     async loadCakes() {
       this.loading = true
 
-      // 修改为 LeanCloud 查询
       const query = new AV.Query('Cake')
-      query.equalTo('status', 1)  // 只查询上架的商品
+      query.equalTo('status', 1)
 
-      // 如果有分类筛选
       if (this.categoryId) {
         query.equalTo('categoryId', this.categoryId)
       }
 
       const results = await query.find()
 
-      // 转换数据格式
       this.cakes = results.map(item => ({
         id: item.id,
         name: item.get('name'),
@@ -72,15 +69,15 @@ export default {
 </script>
 
 <style scoped>
-/* 样式不变 */
 .cake-list {
   min-height: 300px;
 }
 
 .cake-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 20px;
+  max-width: 400px;
 }
 
 .loading,
@@ -89,12 +86,5 @@ export default {
   color: #999;
   padding: 60px 0;
   font-size: 16px;
-}
-
-@media (max-width: 768px) {
-  .cake-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
-  }
 }
 </style>
